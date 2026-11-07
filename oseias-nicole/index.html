@@ -79,15 +79,25 @@
     font-size: 1.2rem; border-radius: 50%;
   }
   .grade {
-    max-width: 1000px; margin: 0 auto;
+    max-width: 1000px; margin: 0 auto; padding: 24px;
     display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px;
   }
   .grade img {
     width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 16px; cursor: pointer;
     border: 4px solid #fff; box-shadow: 0 6px 16px rgba(160,30,70,.2);
-    transition: transform .2s;
+    position: relative;
+    transition: transform .35s cubic-bezier(.2,1.4,.4,1), box-shadow .35s, border-radius .35s;
   }
-  .grade img:hover { transform: scale(1.04) rotate(-1deg); }
+  .grade img:hover {
+    transform: scale(1.25);
+    z-index: 3;
+    border-radius: 20px;
+    box-shadow: 0 18px 45px rgba(160,30,70,.45);
+  }
+  .grade:hover img:not(:hover) { filter: brightness(.85); }
+  .grade img { transition-property: transform, box-shadow, border-radius, filter; }
+  .foto { transition: transform .35s cubic-bezier(.2,1.4,.4,1), box-shadow .35s; }
+  .foto:hover { transform: scale(1.15); box-shadow: 0 0 0 4px #ff8fab, 0 18px 40px rgba(160,30,70,.5); }
   .grade .vazio { grid-column: 1 / -1; text-align: center; color: #a61e4d; padding: 40px 0; }
   .lb { background: rgba(30, 5, 15, .94); display: flex; align-items: center; justify-content: center; padding: 20px; }
   .lb.escondido { display: none; }
