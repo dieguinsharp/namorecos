@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nicole, tenho uma pergunta 💌</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, #ffdde1 0%, #ee9ca7 50%, #ff8fab 100%);
+    display: flex; align-items: center; justify-content: center;
+    color: #5a1a2e;
+  }
+  .heart-bg {
+    position: fixed; bottom: -40px; font-size: 24px; opacity: .7;
+    animation: subir linear forwards; pointer-events: none; z-index: 0;
+  }
+  @keyframes subir {
+    to { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+  }
+  .card {
+    position: relative; z-index: 2;
+    background: rgba(255,255,255,.88);
+    backdrop-filter: blur(6px);
+    border-radius: 28px;
+    padding: 40px 36px;
+    width: min(92vw, 460px);
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(160, 30, 70, .3);
+    animation: entrar .8s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes entrar { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .emoji { font-size: 72px; display: inline-block; animation: pulsar 1.2s infinite; }
+  @keyframes pulsar { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+  h1 { font-family: 'Pacifico', cursive; font-weight: 400; font-size: 2.2rem; margin: 12px 0 8px; color: #d6336c; }
+  p { font-size: 1.05rem; line-height: 1.5; margin-bottom: 8px; }
+  .pergunta { font-weight: 700; font-size: 1.35rem; margin: 18px 0 26px; }
+  .botoes { display: flex; gap: 16px; justify-content: center; align-items: center; min-height: 60px; }
+  button {
+    font-family: inherit; font-weight: 700; font-size: 1.1rem;
+    border: none; border-radius: 999px; padding: 14px 32px; cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+  }
+  #sim { background: #d6336c; color: #fff; box-shadow: 0 6px 18px rgba(214,51,108,.45); }
+  #sim:hover { transform: scale(1.08); }
+  #nao { background: #f1f1f1; color: #777; }
+  #nao.fugindo { position: fixed; z-index: 5; transition: left .25s, top .25s; }
+  .assinatura { margin-top: 26px; font-family: 'Pacifico', cursive; color: #a61e4d; font-size: 1.2rem; }
+  .msg-nao { min-height: 22px; margin-top: 14px; font-size: .95rem; color: #a61e4d; font-style: italic; }
+  .escondido { display: none; }
+  .foto-wrap { position: relative; display: inline-block; margin-bottom: 4px; }
+  .foto {
+    width: 150px; height: 150px; object-fit: cover; object-position: center 30%;
+    border-radius: 50%; border: 5px solid #fff;
+    box-shadow: 0 0 0 4px #ff8fab, 0 10px 25px rgba(160,30,70,.35);
+  }
+  .foto-coracao { position: absolute; right: -4px; bottom: 4px; font-size: 38px; animation: pulsar 1.2s infinite; }
+  #final .foto { width: 190px; height: 190px; }
+  #final h1 { font-size: 2.6rem; }
+  .data { margin-top: 14px; font-size: .9rem; color: #8a4b5e; }
+</style>
+</head>
+<body>
+
+<div class="card" id="pedido">
+  <div class="foto-wrap"><img src="foto.jpg" alt="Oseias e Nicole" class="foto"><span class="foto-coracao">💖</span></div>
+  <h1>Oi, Nicole!</h1>
+  <p>Faz um tempo que eu queria te dizer uma coisa...</p>
+  <p>Você deixa meus dias mais leves, mais engraçados e muito mais bonitos.</p>
+  <div class="pergunta">Você quer namorar comigo? 🥺</div>
+  <div class="botoes">
+    <button id="sim">Sim 💖</button>
+    <button id="nao">Não</button>
+  </div>
+  <div class="msg-nao" id="msgNao"></div>
+  <div class="assinatura">— Oseias</div>
+</div>
+
+<div class="card escondido" id="final">
+  <div class="foto-wrap"><img src="foto.jpg" alt="Oseias e Nicole" class="foto"><span class="foto-coracao">💞</span></div>
+  <h1>EBAAAA!</h1>
+  <p class="pergunta">Oseias 💘 Nicole</p>
+  <p>Agora é oficial! Prometo muitas risadas, carinho e comida boa.</p>
+  <p class="data" id="data"></p>
+</div>
+
+<script>
+  const nao = document.getElementById('nao');
+  const sim = document.getElementById('sim');
+  const msg = document.getElementById('msgNao');
+  const frases = [
+    'Tem certeza? 🤨',
+    'Pensa melhor... 😢',
+    'Esse botão tá com defeito 🙃',
+    'Não aceito essa resposta 😤',
+    'O "Sim" tá logo ali 👉',
+    'Tenta de novo 😏',
+    'Você não vai conseguir 😂'
+  ];
+  let tentativas = 0;
+  let escalaSim = 1;
+
+  function fugir(e) {
+    if (e) e.preventDefault();
+    if (!nao.classList.contains('fugindo')) {
+      const r = nao.getBoundingClientRect();
+      nao.style.left = r.left + 'px';
+      nao.style.top = r.top + 'px';
+      nao.classList.add('fugindo');
+    }
+    const m = 20;
+    const maxX = window.innerWidth - nao.offsetWidth - m;
+    const maxY = window.innerHeight - nao.offsetHeight - m;
+    nao.style.left = Math.max(m, Math.random() * maxX) + 'px';
+    nao.style.top = Math.max(m, Math.random() * maxY) + 'px';
+    msg.textContent = frases[tentativas % frases.length];
+    tentativas++;
+    escalaSim = Math.min(escalaSim + 0.12, 2);
+    sim.style.transform = `scale(${escalaSim})`;
+  }
+  nao.addEventListener('mouseenter', fugir);
+  nao.addEventListener('touchstart', fugir, { passive: false });
+  nao.addEventListener('click', fugir);
+
+  sim.addEventListener('click', () => {
+    document.getElementById('pedido').classList.add('escondido');
+    nao.classList.add('escondido');
+    document.getElementById('final').classList.remove('escondido');
+    document.getElementById('data').textContent =
+      'Desde ' + new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' }) + ' 💕';
+    for (let i = 0; i < 60; i++) setTimeout(() => coracao(true), i * 40);
+    setInterval(() => coracao(true), 250);
+  });
+
+  const icones = ['💖','💗','💕','💘','💞','🌸','✨'];
+  function coracao(festa) {
+    const h = document.createElement('div');
+    h.className = 'heart-bg';
+    h.textContent = icones[Math.floor(Math.random() * icones.length)];
+    h.style.left = Math.random() * 100 + 'vw';
+    h.style.fontSize = (festa ? 20 + Math.random() * 30 : 14 + Math.random() * 18) + 'px';
+    h.style.animationDuration = (4 + Math.random() * 5) + 's';
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 9000);
+  }
+  setInterval(() => coracao(false), 600);
+</script>
+</body>
+</html>
